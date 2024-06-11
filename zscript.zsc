@@ -1,0 +1,6 @@
+version "4.10"
+
+#include "zscript/upgrades.zsc"
+#include "zscript/secrettracker.zsc"
+#include "zscript/upgradehandler.zsc"
+#include "zscript/upgrademenu.zsc"

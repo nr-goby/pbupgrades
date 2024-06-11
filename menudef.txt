@@ -1,0 +1,50 @@
+AddOptionMenu "OptionsMenu"
+{
+	SubMenu "Progression Menu", "progression_menu"
+}
+
+OptionMenu "progression_menu"
+{
+	Class "ProgressionDynamicMenu"
+  Title "Upgrade Menu"
+	StaticText "Menu Boom Bucks: %i"
+	StaticText ""
+	StaticText "Health Upgrades", FIRE
+	StaticText ""
+	SafeCommand "Purchase Max Health Upgrade (+10HP)", "progression-purchase-health-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	StaticText "Damage Reduction Upgrades", FIRE
+	StaticText ""
+	SafeCommand "Purchase Damage Reduction Upgrade (+5%)", "progression-purchase-dr-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Self-Damage Reduction Upgrade (+25%)", "progression-purchase-sdr-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	StaticText "Ammo Upgrades (Ammo Capacity doubled when carrying Backpack)", FIRE
+	StaticText ""
+	SafeCommand "Purchase Bullet Ammo Capacity Upgrade (+50)", "progression-purchase-bullet-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase AR Ammo Capacity Upgrade (+50)", "progression-purchase-ar-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Shotgun Ammo Capacity Upgrade (+10)", "progression-purchase-shell-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Rocket Ammo Capacity Upgrade (+10)", "progression-purchase-rocket-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Cell Ammo Capacity Upgrade (+50)", "progression-purchase-cell-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	StaticText "Damage Increase Upgrades", FIRE
+	StaticText ""
+	SafeCommand "Purchase Damage Increase Upgrade (+5%)", "progression-purchase-di-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+}
+
+OptionMenu "insufficient_currency"
+{
+  Title "Upgrade Menu"
+	StaticText "Not Enough Boom Bucks!"
+}
+
+OptionMenu "max_upgrade_level"
+{
+  Title "Upgrade Menu"
+	StaticText "You reached the maximum upgrade level for that!"
+}

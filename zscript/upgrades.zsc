@@ -1,0 +1,292 @@
+class IncreaseMaxHealthInv : Inventory
+{
+  int healthIncrease;
+
+  property healthIncrease : healthIncrease;
+
+  Default
+  {
+    IncreaseMaxHealthInv.healthIncrease 10;
+    Inventory.maxamount 5;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override bool HandlePickup (Inventory item)
+  {
+    if(item.GetClass() != GetClass()) return false;
+    if (amount >= maxamount)
+    {
+      Console.Printf("Max Upgrade Reached, Shouldn't be able to pick up anymore!");
+      return true;
+    }
+    bool isGood = super.HandlePickup(item);
+    setMaxHealth();
+
+    return isGood;
+  }
+
+  override void AttachToOwner(Actor toucher)
+  {
+    super.AttachToOwner(toucher);
+    setMaxHealth();
+  }
+
+  void setMaxHealth()
+  {
+    PlayerPawn plr = PlayerPawn(Owner);
+    if (!plr)
+    {
+      Console.Printf("No Owner!");
+      return;
+    }
+
+    int initialHealth = 100;
+    int totalHealth = initialHealth + (healthIncrease * amount);
+
+    plr.MaxHealth = totalHealth;
+
+    Console.Printf("Player Max Health: %i", plr.MaxHealth);
+  }
+}
+
+class IncreaseMaxDamageInv : Inventory
+{
+  double damageIncrease;
+  double totalDamageIncrease;
+
+  property damageIncrease : damageIncrease;
+
+  Default
+  {
+    IncreaseMaxDamageInv.damageIncrease 0.05;
+    Inventory.maxamount 10;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override void ModifyDamage(int damage, Name damageType, out int newdamage, bool passive, Actor inflictor, Actor source, int flags)
+	{
+		if (!passive && damage > 0)
+		{
+      // Console.Printf("Damage Flag: %i", flags);
+      // Console.Printf("Old Damage Dealt: %i", damage);
+      // Console.Printf("Inventory amount: %i", amount);
+      totalDamageIncrease = (damageIncrease * amount) + 1;
+			newdamage = max(1, ApplyDamageFactors(GetClass(), damageType, damage, damage * totalDamageIncrease));
+      // Console.Printf("New Damage Dealt: %i", newdamage);
+			if (Owner != null && newdamage > damage) Owner.A_StartSound(ActiveSound, CHAN_AUTO, CHANF_DEFAULT, 1.0, ATTN_NONE);
+		}
+	}
+}
+
+class DecreaseDamageReceivedInv : Inventory
+{
+  double damageDecrease;
+  double totalDamageDecrease;
+
+  property damageDecrease : damageDecrease;
+
+  Default
+  {
+    DecreaseDamageReceivedInv.damageDecrease 0.05;
+    Inventory.maxamount 10;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override void ModifyDamage(int damage, Name damageType, out int newdamage, bool passive, Actor inflictor, Actor source, int flags)
+	{
+		if (passive && damage > 0)
+		{
+      // Console.Printf("Old Damage Dealt: %i", damage);
+      // Console.Printf("Inventory amount: %i", amount);
+      totalDamageDecrease = 1 - (damageDecrease * amount);
+			newdamage = max(0, ApplyDamageFactors(GetClass(), damageType, damage, damage * totalDamageDecrease));
+      // Console.Printf("New Damage Dealt: %i", newdamage);
+			if (Owner != null && newdamage > damage) Owner.A_StartSound(ActiveSound, CHAN_AUTO, CHANF_DEFAULT, 1.0, ATTN_NONE);
+		}
+	}
+
+}
+
+// super class for ammo increases
+class IncreaseAmmoInv : Inventory
+{
+  int ammoIncrease;
+  string ammoClass;
+  string ammoName;
+  int totalAmmoAmount;
+  int totalBackpackAmmoAmount;
+
+  property ammoIncrease : ammoIncrease;
+  property ammoClass : ammoClass;
+  property ammoName : ammoName;
+
+  Default
+  {
+    IncreaseAmmoInv.ammoIncrease 0;
+    IncreaseAmmoInv.ammoClass "";
+    IncreaseAmmoInv.ammoName "";
+    Inventory.amount 1;
+    Inventory.maxamount 2;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override bool HandlePickup (Inventory item)
+  {
+    if(item.GetClass() != GetClass()) return false;
+    // Console.Printf("Pickup Called, Inventory name: %s, Inventory Amount: %i, Max Inventory Amount: %i", item.GetClassName(), amount, maxamount);
+    if (amount >= maxamount)
+    {
+      // Console.Printf("Max Upgrade Reached, Shouldn't be able to pick up anymore!");
+      return true;
+    }
+
+    bool isGood = super.HandlePickup(item);
+    // Console.Printf("Pickup Successful");
+    // Console.Printf("New Inventory Amount: %i", amount);
+    setMaxAmmo();
+
+    return isGood;
+  }
+
+  override void AttachToOwner(Actor toucher)
+  {
+    super.AttachToOwner(toucher);
+    // Console.Printf("Attach Called, Inventory name: %s Inventory Amount: %i", GetClassName(), amount);
+    setMaxAmmo();
+  }
+
+  void setMaxAmmo()
+  {
+    let plr = Owner;
+    if (!plr)
+    {
+      Console.Printf("No Owner!");
+      return;
+    }
+
+    Ammo ammoInv = Ammo(plr.FindInventory(ammoClass));
+
+    if (!ammoInv)
+    {
+      Console.Printf("No %s in Owner Inventory!", ammoClass);
+      plr.GiveInventory(ammoClass, 1);
+      ammoInv = Ammo(plr.FindInventory(ammoClass));
+    }
+
+    if (ammoInv)
+    {
+      Console.Printf("%s Amount: %i", ammoName, ammoInv.Amount);
+      Console.Printf("Old Max %s Amount: %i", ammoName, ammoInv.MaxAmount);
+      Console.Printf("Old Max %s Amount (backpack): %i", ammoName, ammoInv.BackpackMaxAmount);
+      let initialMaxAmount = ammoInv.MaxAmount;
+      if(initialMaxAmount == ammoInv.BackpackMaxAmount)
+      {
+        ammoInv.MaxAmount = initialMaxAmount + (ammoIncrease * 2);
+        ammoInv.BackpackMaxAmount = ammoInv.MaxAmount;
+      }
+      else
+      {
+        ammoInv.MaxAmount = initialMaxAmount + ammoIncrease;
+        ammoInv.BackpackMaxAmount = (initialMaxAmount * 2) + (ammoIncrease * 2);
+      }
+
+      totalAmmoAmount = ammoInv.MaxAmount;
+      totalBackpackAmmoAmount = ammoInv.BackpackMaxAmount;
+      Console.Printf("New Max %s Amount: %i", ammoName, ammoInv.MaxAmount);
+      Console.Printf("New Max %s Amount (backpack): %i", ammoName, ammoInv.BackpackMaxAmount);
+    }
+  }
+}
+
+class IncreaseBulletAmmoInv : IncreaseAmmoInv
+{
+  Default
+  {
+    IncreaseAmmoInv.ammoIncrease 50;
+    IncreaseAmmoInv.ammoClass "PB_LowCalMag";
+    IncreaseAmmoInv.ammoName "Low Caliber Bullet";
+  }
+}
+
+class IncreaseArAmmoInv : IncreaseAmmoInv
+{
+  Default
+  {
+    IncreaseAmmoInv.ammoIncrease 50;
+    IncreaseAmmoInv.ammoClass "PB_HighCalMag";
+    IncreaseAmmoInv.ammoName "High Caliber Bullet";
+    Inventory.maxamount 2;
+  }
+}
+
+class IncreaseShellAmmoInv : IncreaseAmmoInv
+{
+  Default
+  {
+    IncreaseAmmoInv.ammoIncrease 10;
+    IncreaseAmmoInv.ammoClass "PB_Shell";
+    IncreaseAmmoInv.ammoName "Shell";
+  }
+}
+
+class IncreaseRocketAmmoInv : IncreaseAmmoInv
+{
+  Default
+  {
+    IncreaseAmmoInv.ammoIncrease 10;
+    IncreaseAmmoInv.ammoClass "PB_RocketAmmo";
+    IncreaseAmmoInv.ammoName "Rocket";
+  }
+}
+
+class IncreaseCellAmmoInv : IncreaseAmmoInv
+{
+  Default
+  {
+    IncreaseAmmoInv.ammoIncrease 50;
+    IncreaseAmmoInv.ammoClass "PB_Cell";
+    IncreaseAmmoInv.ammoName "Cell";
+  }
+}
+
+// Reduces self damage from rockets
+class ReduceSelfExplosionDamage : Inventory
+{
+  double rocketDamageDecrease;
+
+  property rocketDamageDecrease : rocketDamageDecrease;
+
+  Default
+  {
+    ReduceSelfExplosionDamage.rocketDamageDecrease 0.25;
+    Inventory.maxamount 2;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override void ModifyDamage(int damage, Name damageType, out int newdamage, bool passive, Actor inflictor, Actor source, int flags)
+	{
+    if (!passive || damage <= 0 || flags != DMG_EXPLOSION) return;
+
+    // Console.Printf("Inflictor: %s", inflictor.GetClassName());
+    // Console.Printf("Source: %s", source.GetClassName());
+    // Console.Printf("Flags: %i", flags);
+    // Console.Printf("Inventory amount: %i", amount);
+    // Console.Printf("Old Damage Dealt: %i", damage);
+
+    if(source is "PB_PlayerPawn")
+    {
+      double totalDamageDecrease = 1 - (rocketDamageDecrease * amount);
+      // Console.Printf("Self Damage modifier: %.2f", totalDamageDecrease);
+      // Console.Printf("Old Damage Dealt: %i", damage);
+      // Console.Printf("Inventory amount: %i", amount);
+			newdamage = max(0, ApplyDamageFactors(GetClass(), damageType, damage, damage * totalDamageDecrease));
+      // Console.Printf("New Damage Dealt: %i", newdamage);
+			if (Owner != null && newdamage > damage) Owner.A_StartSound(ActiveSound, CHAN_AUTO, CHANF_DEFAULT, 1.0, ATTN_NONE);
+    }
+	}
+}
