@@ -389,7 +389,7 @@ class ArmorRegenUpgrade : Inventory
 
   override void DoEffect()
   {
-    if (regenTimeCounter < 35)
+    if (regenTimeCounter < 350)
     {
       regenTimeCounter++;
       return;
