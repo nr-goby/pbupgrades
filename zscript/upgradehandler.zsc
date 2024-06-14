@@ -9,6 +9,7 @@ struct UpgradeInfo
   int shellAmmoLevel;
   int rocketAmmoLevel;
   int cellAmmoLevel;
+  int powerupDurationLevel;
 }
 
 class ProgressionHandler : EventHandler
@@ -26,7 +27,7 @@ class ProgressionHandler : EventHandler
   override void WorldLoaded(WorldEvent e)
 	{
     secretTracker = SecretTracker.Get();
-		Console.Printf("World loaded, total currency: %i", secretTracker.currency);
+		// Console.Printf("World loaded, total currency: %i", secretTracker.currency);
 	}
 
   override void WorldUnloaded (WorldEvent e)
@@ -34,96 +35,75 @@ class ProgressionHandler : EventHandler
     secretTracker.UpdateLevelStats();
   }
 
-  // override void WorldThingDied (WorldEvent e)
-  // {
-  //   if (e.Thing.CountsAsKill())
-  //   {
-  //     int reward = CalculateReward(e.Thing.SpawnHealth());
-  //     secretTracker.currency += reward;
-  //     Console.Printf("Monster killed, reward amount: %i", reward);
-  //   }
-  // }
+  override void WorldThingDied (WorldEvent e)
+  {
+    if (e.Thing.CountsAsKill())
+    {
+      int reward = CalculateReward(e.Thing.SpawnHealth());
+      secretTracker.currency += reward;
+      Console.Printf("Earned %i Boom Bucks!", reward);
+    }
+  }
 
   // enables communication with a menu
   override void NetworkProcess(ConsoleEvent e)
   {
     super.NetworkProcess(e);
     if (e.Name ~== "progression-open-menu")
-      {
-			  Menu.SetMenu("progression_menu");
-      }
+    {
+			Menu.SetMenu("progression_menu");
+    }
     
     if (e.Name ~== "progression-purchase-health-upgrade")
-      {
-        PurchaseUpgrade("IncreaseMaxHealthInv");
-        
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Health Upgrade, Max Health: %i", plr.MaxHealth);
-      }
+    {
+      PurchaseUpgrade("IncreaseMaxHealthInv", 2);
+    }
 
     if (e.Name ~== "progression-purchase-dr-upgrade")
-      {
-        PurchaseUpgrade("DecreaseDamageReceivedInv");
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Damage Reduction Upgrade");
-      }
+    {
+      PurchaseUpgrade("DecreaseDamageReceivedInv", 2);
+    }
 
     if (e.Name ~== "progression-purchase-bullet-upgrade")
-      {
-        PurchaseUpgrade("IncreaseBulletAmmoInv", 3);
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Bullet Upgrade");
-      }
+    {
+      PurchaseUpgrade("IncreaseBulletAmmoInv", 5);
+    }
 
     if (e.Name ~== "progression-purchase-ar-upgrade")
-      {
-        PurchaseUpgrade("IncreaseArAmmoInv", 3);
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased AR Upgrade");
-      }
+    {
+      PurchaseUpgrade("IncreaseArAmmoInv", 5);
+    }
 
     if (e.Name ~== "progression-purchase-shell-upgrade")
-      {
-        PurchaseUpgrade("IncreaseShellAmmoInv", 3);
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Shell Upgrade");
-      }
+    {
+      PurchaseUpgrade("IncreaseShellAmmoInv", 5);
+    }
 
     if (e.Name ~== "progression-purchase-rocket-upgrade")
-      {
-        PurchaseUpgrade("IncreaseRocketAmmoInv", 3);
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Rocket Upgrade");
-      }
+    {
+      PurchaseUpgrade("IncreaseRocketAmmoInv", 5);
+    }
 
     if (e.Name ~== "progression-purchase-cell-upgrade")
-      {
-        PurchaseUpgrade("IncreaseCellAmmoInv", 3);
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Cell Upgrade");
-      }
+    {
+      PurchaseUpgrade("IncreaseCellAmmoInv", 5);
+    }
 
     if (e.Name ~== "progression-purchase-di-upgrade")
-      {
-        PurchaseUpgrade("IncreaseMaxDamageInv");
-
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Max Damage Upgrade");
-      }
+    {
+      PurchaseUpgrade("IncreaseMaxDamageInv", 2);
+    }
 
     if (e.Name ~== "progression-purchase-sdr-upgrade")
-      {
-        PurchaseUpgrade("ReduceSelfExplosionDamage", 3);
+    {
+      PurchaseUpgrade("ReduceSelfExplosionDamage", 5);
+    }
 
-        // Console.Printf("Current Currency: %i", secretTracker.currency);
-        Console.Printf("Purchased Max Damage Upgrade");
-      }
+    if (e.Name ~== "progression-purchase-powerup-upgrade")
+    {
+      PurchaseUpgrade("IncreasePowerupDuration", 5);
+    }
+      
 
     SetUpgradeInfo(plr);
     // Console.Printf("NetworkProcess: %s", e.Name);
@@ -157,6 +137,9 @@ class ProgressionHandler : EventHandler
 
     let selfDamage = player.FindInventory("ReduceSelfExplosionDamage");
     if (selfDamage) info.selfDamageLevel = selfDamage.amount;
+
+    let powerupDuration = player.FindInventory("IncreasePowerupDuration");
+    if (powerupDuration) info.powerupDurationLevel = powerupDuration.amount;
   }
 
   int CalculateReward(int spawnHealth)
@@ -176,37 +159,37 @@ class ProgressionHandler : EventHandler
 
     if (!item)
     {
-      if (secretTracker.currency < (1 * padding))
+      if (secretTracker.currency < (10 * padding))
       {
-        Console.Printf("Not enough currency to purchase upgrade");
+        // Console.Printf("Not enough currency to purchase upgrade");
         Menu.SetMenu("insufficient_currency");
         return;
       }
 
-      secretTracker.currency -= 1 * padding;
+      secretTracker.currency -= (10 * padding);
       plr.A_GiveInventory(inv, 1);
       return;
     }
 
     // Console.Printf("Item found, item amount %i", item.amount);
     int level = item.amount;
-    int currencyRequired = (level + 1) * padding;
+    int currencyRequired = 10 * ((level + 1) * padding);
     if (currencyRequired > secretTracker.currency)
     {
-      Console.Printf("Not enough currency to purchase upgrade");
+      // Console.Printf("Not enough currency to purchase upgrade");
       Menu.SetMenu("insufficient_currency");
       return;
     }
 
     if (level == item.maxamount)
     {
-      Console.Printf("You reached max level in this upgrade");
+      // Console.Printf("You reached max level in this upgrade");
       Menu.SetMenu("max_upgrade_level");
       return;
     }
 
     secretTracker.currency -= currencyRequired;
     plr.A_GiveInventory(inv);
-    // Console.Printf("Purchased upgrade %s, item level: %i, max level: %i", inv, item.amount, item.maxamount);
+    Console.Printf("Purchased upgrade %s, item level: %i, max level: %i", inv, item.amount, item.maxamount);
   }
 }

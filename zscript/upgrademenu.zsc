@@ -21,21 +21,21 @@ class ProgressionDynamicMenu : OptionMenu
     int menuhl = event.info.healthLevel;
     string maxHealth = String.Format("Current Max Health: %i", 100 + (menuhl * 10));
     string healthLevel = String.Format("Current Health Level: %i/5", menuhl);
-    string healthNextLevel = String.Format("Next level: %i currency", menuhl + 1);
+    string healthNextLevel = String.Format("Next level: %i currency", 10 * (menuhl + 1) * 2);
     if (menuhl == 5) healthNextLevel = "MAX LEVEL";
     mDesc.mItems[3].mLabel = String.Format("%s | %s | %s", maxHealth, healthLevel, healthNextLevel);
 
     int menupl = event.info.protectionLevel;
     string currentDamageReduction = String.Format("Current Damage Reduction: %i%%", menupl * 5);
     string currentDrLevel = String.Format("Current DR Level: %i/10", menupl);
-    string nextDrLevel = String.Format("Next level: %i currency", menupl + 1);
+    string nextDrLevel = String.Format("Next level: %i currency", 10 * (menupl + 1) * 2);
     if (menupl == 10) nextDrLevel = "MAX LEVEL";
     mDesc.mItems[7].mLabel = String.Format("%s | %s | %s", currentDamageReduction, currentDrLevel, nextDrLevel);
 
     int menusdrl = event.info.selfDamageLevel;
     string currentSelfDamageReduction = String.Format("Current Self-Damage Reduction: %i%%", menusdrl * 25);
     string currentSdrLevel = String.Format("Current SDR Level: %i/2", menusdrl);
-    string nextSdrLevel = String.Format("Next level: %i currency", (menusdrl + 1) * 3);
+    string nextSdrLevel = String.Format("Next level: %i currency", 10 * (menusdrl + 1) * 5);
     if (menusdrl == 2) nextSdrLevel = "MAX LEVEL";
     mDesc.mItems[9].mLabel = String.Format("%s | %s | %s", currentSelfDamageReduction, currentSdrLevel, nextSdrLevel);
 
@@ -43,7 +43,7 @@ class ProgressionDynamicMenu : OptionMenu
     int defaultBullets = (menubal * 50) + 200;
     string currentMaxBullets = String.Format("Current Max Low Caliber Ammo: %i (%i)", defaultBullets, defaultBullets * 2);
     string currentBulletLevel = String.Format("Current Level: %i/2", menubal);
-    string nextBulletLevel = String.Format("Next level: %i currency", (menubal + 1) * 3);
+    string nextBulletLevel = String.Format("Next level: %i currency", 10 * (menubal + 1) * 5);
     if (menubal == 2) nextBulletLevel = "MAX LEVEL";
     mDesc.mItems[13].mLabel = String.Format("%s | %s | %s", currentMaxBullets, currentBulletLevel, nextBulletLevel);
     
@@ -51,7 +51,7 @@ class ProgressionDynamicMenu : OptionMenu
     int defaultAr = (menuaral * 50) + 300;
     string currentMaxArAmmo = String.Format("Current Max High Caliber Ammo: %i (%i)", defaultAr, defaultAr * 2);
     string currentArAmmoLevel = String.Format("Current Level: %i/2", menuaral);
-    string nextArAmmoLevel = String.Format("Next level: %i currency", (menuaral + 1) * 3);
+    string nextArAmmoLevel = String.Format("Next level: %i currency", 10 * (menuaral + 1) * 5);
     if (menuaral == 2) nextArAmmoLevel = "MAX LEVEL";
     mDesc.mItems[15].mLabel = String.Format("%s | %s | %s", currentMaxArAmmo, currentArAmmoLevel, nextArAmmoLevel);
 
@@ -59,7 +59,7 @@ class ProgressionDynamicMenu : OptionMenu
     int defaultShells = (menusal * 10) + 50;
     string currentMaxShellAmmo = String.Format("Current Max Shell Ammo: %i (%i)", defaultShells, defaultShells * 2);
     string currentShellAmmoLevel = String.Format("Current Level: %i/2", menusal);
-    string nextShellAmmoLevel = String.Format("Next level: %i currency", (menusal + 1) * 3);
+    string nextShellAmmoLevel = String.Format("Next level: %i currency", 10 * (menusal + 1) * 5);
     if (menusal == 2) nextShellAmmoLevel = "MAX LEVEL";
     mDesc.mItems[17].mLabel = String.Format("%s | %s | %s", currentMaxShellAmmo, currentShellAmmoLevel, nextShellAmmoLevel);
     
@@ -67,7 +67,7 @@ class ProgressionDynamicMenu : OptionMenu
     int defaultRockets = (menuroal * 10) + 50;
     string currentMaxRocketAmmo = String.Format("Current Max Rocket Ammo: %i (%i)", defaultRockets, defaultRockets * 2);
     string currentRocketAmmoLevel = String.Format("Current Level: %i/2", menuroal);
-    string nextRocketAmmoLevel = String.Format("Next level: %i currency", (menuroal + 1) * 3);
+    string nextRocketAmmoLevel = String.Format("Next level: %i currency", 10 * (menuroal + 1) * 5);
     if (menuroal == 2) nextRocketAmmoLevel = "MAX LEVEL";
     mDesc.mItems[19].mLabel = String.Format("%s | %s | %s", currentMaxRocketAmmo, currentRocketAmmoLevel, nextRocketAmmoLevel);
 
@@ -75,17 +75,24 @@ class ProgressionDynamicMenu : OptionMenu
     int defaultCells = (menuceal * 50) + 300;
     string currentMaxCellAmmo = String.Format("Current Max Cell Ammo: %i (%i)", defaultCells, defaultCells * 2);
     string currentCellAmmoLevel = String.Format("Current Level: %i/2", menuceal);
-    string nextCellAmmoLevel = String.Format("Next level: %i currency", (menuceal + 1) * 3);
+    string nextCellAmmoLevel = String.Format("Next level: %i currency", 10 * (menuceal + 1) * 5);
     if (menuceal == 2) nextCellAmmoLevel = "MAX LEVEL";
     mDesc.mItems[21].mLabel = String.Format("%s | %s | %s", currentMaxCellAmmo, currentCellAmmoLevel, nextCellAmmoLevel);
 
     int menudl = event.info.damageLevel;
     string currentDamageIncrease = String.Format("Current Damage Increase: %i%%", menudl * 5);
     string currentDiLevel = String.Format("Current DI Level: %i/10", menudl);
-    string nextDiLevel = String.Format("Next level: %i currency", menudl + 1);
+    string nextDiLevel = String.Format("Next level: %i currency", 10 * (menudl + 1) * 2);
     if (menudl == 10) nextDiLevel = "MAX LEVEL";
     mDesc.mItems[25].mLabel = String.Format("%s | %s | %s", currentDamageIncrease, currentDiLevel, nextDiLevel);
     
+    int menupdl = event.info.powerupDurationLevel;
+    string currentPDurationIncrease = String.Format("Current Powerup Duration Increase: %i%%", menupdl * 25);
+    string currentPDurationLevel = String.Format("Current DI Level: %i/4", menupdl);
+    string nextPDurationLevel = String.Format("Next level: %i currency", 10 * (menupdl + 1) * 5);
+    if (menupdl == 4) nextPDurationLevel = "MAX LEVEL";
+    mDesc.mItems[29].mLabel = String.Format("%s | %s | %s", currentPDurationIncrease, currentPDurationLevel, nextPDurationLevel);
+
     return super.OnUIEvent(ev);
   }
 
