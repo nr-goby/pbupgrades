@@ -324,3 +324,49 @@ class IncreasePowerupDuration : Inventory
     return isGood;
   }
 }
+
+class HealthRegenUpgrade : Inventory
+{
+  int regenTimeCounter;
+  int regenLimit;
+
+  property regenTimeCounter : regenTimeCounter;
+  property regenLimit : regenLimit;
+
+  Default
+  {
+    HealthRegenUpgrade.regenTimeCounter 0;
+    HealthRegenUpgrade.regenLimit 50;
+    Inventory.maxamount 2;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override void DoEffect()
+  {
+    if (regenTimeCounter < 350)
+    {
+      regenTimeCounter++;
+      return;
+    }
+
+    int maxHealthLimit = regenLimit * amount;
+    let plr = PlayerPawn(Owner);
+    if (!plr)
+    {
+      Console.Printf("No Owner!");
+      return;
+    }
+
+    if (plr.Health >= maxHealthLimit)
+    {
+      regenTimeCounter = 0;
+      return;
+    }
+
+    plr.GiveBody(5, maxHealthLimit);
+    regenTimeCounter = 0;
+    return;
+  }
+
+}
