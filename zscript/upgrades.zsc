@@ -101,6 +101,7 @@ class DecreaseDamageReceivedInv : Inventory
 		{
       // Console.Printf("Old Damage Dealt: %i", damage);
       // Console.Printf("Inventory amount: %i", amount);
+      // Console.Printf("Inflictor: %s", inflictor.GetClassName());
       totalDamageDecrease = 1 - (damageDecrease * amount);
 			newdamage = max(0, ApplyDamageFactors(GetClass(), damageType, damage, damage * totalDamageDecrease));
       // Console.Printf("New Damage Dealt: %i", newdamage);
@@ -159,6 +160,7 @@ class IncreaseAmmoInv : Inventory
     setMaxAmmo();
   }
 
+  // TODO: possibly refactor with SetAmmoCapacity
   void setMaxAmmo()
   {
     let plr = Owner;
@@ -289,4 +291,36 @@ class ReduceSelfExplosionDamage : Inventory
 			if (Owner != null && newdamage > damage) Owner.A_StartSound(ActiveSound, CHAN_AUTO, CHANF_DEFAULT, 1.0, ATTN_NONE);
     }
 	}
+}
+
+
+class IncreasePowerupDuration : Inventory
+{
+  double powerupDurationIncrease;
+  double totalPowerupDurationIncrease;
+
+  property powerupDurationIncrease : powerupDurationIncrease;
+
+  Default
+  {
+    IncreasePowerupDuration.powerupDurationIncrease 0.25;
+    Inventory.maxamount 4;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override bool HandlePickup (Inventory item)
+  {
+    let power = Powerup(item);
+    if (power)
+    {
+      Console.Printf("Old Powerup Duration: %i", power.EffectTics);
+      double durationMultipler = 1 + (powerupDurationIncrease * amount);
+      power.EffectTics = power.EffectTics * durationMultipler;
+      Console.Printf("New Powerup Duration: %i", power.EffectTics);
+    }
+
+    bool isGood = super.HandlePickup(item);
+    return isGood;
+  }
 }

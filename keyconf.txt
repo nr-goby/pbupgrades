@@ -11,6 +11,7 @@ Alias progression-purchase-shell-upgrade "netevent progression-purchase-shell-up
 Alias progression-purchase-rocket-upgrade "netevent progression-purchase-rocket-upgrade"
 Alias progression-purchase-cell-upgrade "netevent progression-purchase-cell-upgrade"
 Alias progression-purchase-di-upgrade "netevent progression-purchase-di-upgrade"
+Alias progression-purchase-powerup-upgrade "netevent progression-purchase-powerup-upgrade"
 
 // Keybinding
 AddKeySection "Progression Menu" ProgressionMenu

@@ -35,6 +35,9 @@ OptionMenu "progression_menu"
 	StaticText ""
 	SafeCommand "Purchase Damage Increase Upgrade (+5%)", "progression-purchase-di-upgrade", "Are You sure you want to purchase this upgrade?"
 	StaticText ""
+	StaticText "Miscellaneous Upgrades", FIRE
+	StaticText ""
+	SafeCommand "Purchase Powerup Duration Increase Upgrade (+25%)", "progression-purchase-powerup-upgrade", "Are You sure you want to purchase this upgrade?"
 }
 
 OptionMenu "insufficient_currency"
