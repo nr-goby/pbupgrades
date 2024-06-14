@@ -368,5 +368,76 @@ class HealthRegenUpgrade : Inventory
     regenTimeCounter = 0;
     return;
   }
+}
 
+class ArmorRegenUpgrade : Inventory
+{
+  int regenTimeCounter;
+  int regenLimit;
+
+  property regenTimeCounter : regenTimeCounter;
+  property regenLimit : regenLimit;
+
+  Default
+  {
+    ArmorRegenUpgrade.regenTimeCounter 0;
+    ArmorRegenUpgrade.regenLimit 25;
+    Inventory.maxamount 2;
+    +INVENTORY.PERSISTENTPOWER;
+    +INVENTORY.UNDROPPABLE;
+  }
+
+  override void DoEffect()
+  {
+    if (regenTimeCounter < 35)
+    {
+      regenTimeCounter++;
+      return;
+    }
+
+    int maxArmorLimit = regenLimit * amount;
+    let plr = PlayerPawn(Owner);
+    if (!plr) return;
+
+    let playerArmor = BasicArmor(plr.FindInventory("BasicArmor"));
+
+    // shouldn't be possible to find no armor
+    if (!playerArmor) return;
+
+    // prevents 0 save percent bug when player armor is 0
+    if (playerArmor.amount == 0)
+    {
+      // Console.Printf("No Armor!");
+      // Project Brutality Armor Bonus
+      plr.A_GiveInventory("GiveArmor");
+      playerArmor.amount += 4;
+      regenTimeCounter = 0;
+      return;
+    }
+
+    if (playerArmor.amount >= maxArmorLimit)
+    {
+      // Console.Printf("Max Armor Regen Reached! Armor Amount: %i", playerArmor.amount);
+      regenTimeCounter = 0;
+      return;
+    }
+    
+    if (playerArmor.amount < maxArmorLimit)
+    {
+      // Console.Printf("Armor Found! Armor Amount: %i", playerArmor.amount);
+      if (playerArmor.amount + 5 > maxArmorLimit)
+      {
+        playerArmor.amount = maxArmorLimit;
+        regenTimeCounter = 0;
+        return;
+      }
+
+      playerArmor.amount += 5;
+      regenTimeCounter = 0;
+      return;
+    }
+
+    regenTimeCounter = 0;
+    return;
+  }
 }
