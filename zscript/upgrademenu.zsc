@@ -93,6 +93,20 @@ class ProgressionDynamicMenu : OptionMenu
     if (menupdl == 4) nextPDurationLevel = "MAX LEVEL";
     mDesc.mItems[29].mLabel = String.Format("%s | %s | %s", currentPDurationIncrease, currentPDurationLevel, nextPDurationLevel);
 
+    int menuhrl = event.info.healthRegenLevel;
+    string currentHealthRegenIncrease = String.Format("Regen up to %i Health", menuhrl * 50);
+    string currentHRegenLevel = String.Format("Current Upgrade Level: %i/2", menuhrl);
+    string nextHRegenLevel = String.Format("Next level: %i currency", 10 * (menuhrl + 1) * 100);
+    if (menuhrl == 2) nextHRegenLevel = "MAX LEVEL";
+    mDesc.mItems[31].mLabel = String.Format("%s | %s | %s", currentHealthRegenIncrease, currentHRegenLevel, nextHRegenLevel);
+
+    int menuarl = event.info.armorRegenLevel;
+    string currentArmorRegenIncrease = String.Format("Regen up to %i Armor", menuarl * 25);
+    string currentARegenLevel = String.Format("Current Upgrade Level: %i/2", menuarl);
+    string nextARegenLevel = String.Format("Next level: %i currency", 10 * (menuarl + 1) * 100);
+    if (menuarl == 2) nextARegenLevel = "MAX LEVEL";
+    mDesc.mItems[33].mLabel = String.Format("%s | %s | %s", currentArmorRegenIncrease, currentARegenLevel, nextARegenLevel);
+
     return super.OnUIEvent(ev);
   }
 

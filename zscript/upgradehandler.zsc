@@ -10,6 +10,8 @@ struct UpgradeInfo
   int rocketAmmoLevel;
   int cellAmmoLevel;
   int powerupDurationLevel;
+  int healthRegenLevel;
+  int armorRegenLevel;
 }
 
 class ProgressionHandler : EventHandler
@@ -27,7 +29,6 @@ class ProgressionHandler : EventHandler
   override void WorldLoaded(WorldEvent e)
 	{
     secretTracker = SecretTracker.Get();
-		// Console.Printf("World loaded, total currency: %i", secretTracker.currency);
 	}
 
   override void WorldUnloaded (WorldEvent e)
@@ -103,6 +104,16 @@ class ProgressionHandler : EventHandler
     {
       PurchaseUpgrade("IncreasePowerupDuration", 5);
     }
+
+    if (e.Name ~== "progression-purchase-health-regen-upgrade")
+    {
+      PurchaseUpgrade("HealthRegenUpgrade", 100);
+    }
+
+    if (e.Name ~== "progression-purchase-armor-regen-upgrade")
+    {
+      PurchaseUpgrade("ArmorRegenUpgrade", 100);
+    }
       
 
     SetUpgradeInfo(plr);
@@ -140,6 +151,12 @@ class ProgressionHandler : EventHandler
 
     let powerupDuration = player.FindInventory("IncreasePowerupDuration");
     if (powerupDuration) info.powerupDurationLevel = powerupDuration.amount;
+
+    let healthRegen = player.FindInventory("HealthRegenUpgrade");
+    if (healthRegen) info.healthRegenLevel = healthRegen.amount;
+
+    let armorRegen = player.FindInventory("ArmorRegenUpgrade");
+    if (armorRegen) info.armorRegenLevel = armorRegen.amount;
   }
 
   int CalculateReward(int spawnHealth)

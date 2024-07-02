@@ -38,6 +38,10 @@ OptionMenu "progression_menu"
 	StaticText "Miscellaneous Upgrades", FIRE
 	StaticText ""
 	SafeCommand "Purchase Powerup Duration Increase Upgrade (+25%)", "progression-purchase-powerup-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Health Regen Upgrade (+50 Health Limit)", "progression-purchase-health-regen-upgrade", "Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Armor Regen Upgrade (+25 Armor Limit)", "progression-purchase-armor-regen-upgrade", "Are You sure you want to purchase this upgrade?"
 }
 
 OptionMenu "insufficient_currency"
