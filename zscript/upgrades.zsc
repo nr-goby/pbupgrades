@@ -115,18 +115,21 @@ class DecreaseDamageReceivedInv : Inventory
 class IncreaseAmmoInv : Inventory
 {
   int ammoIncrease;
+  int initialMaxAmmo;
   string ammoClass;
   string ammoName;
   int totalAmmoAmount;
   int totalBackpackAmmoAmount;
 
   property ammoIncrease : ammoIncrease;
+  property initialMaxAmmo : initialMaxAmmo;
   property ammoClass : ammoClass;
   property ammoName : ammoName;
 
   Default
   {
     IncreaseAmmoInv.ammoIncrease 0;
+    IncreaseAmmoInv.initialMaxAmmo 0;
     IncreaseAmmoInv.ammoClass "";
     IncreaseAmmoInv.ammoName "";
     Inventory.amount 1;
@@ -137,6 +140,9 @@ class IncreaseAmmoInv : Inventory
 
   override bool HandlePickup (Inventory item)
   {
+    let ammoPickup = Ammo(item);
+    if (ammoPickup) setMaxAmmo();
+
     if(item.GetClass() != GetClass()) return false;
     // Console.Printf("Pickup Called, Inventory name: %s, Inventory Amount: %i, Max Inventory Amount: %i", item.GetClassName(), amount, maxamount);
     if (amount >= maxamount)
@@ -164,42 +170,39 @@ class IncreaseAmmoInv : Inventory
   void setMaxAmmo()
   {
     let plr = Owner;
-    if (!plr)
-    {
-      Console.Printf("No Owner!");
-      return;
-    }
+    if (!plr) return;
 
     Ammo ammoInv = Ammo(plr.FindInventory(ammoClass));
 
-    if (!ammoInv)
-    {
-      Console.Printf("No %s in Owner Inventory!", ammoClass);
-      plr.GiveInventory(ammoClass, 1);
-      ammoInv = Ammo(plr.FindInventory(ammoClass));
-    }
+    if (!ammoInv) return;
 
     if (ammoInv)
     {
-      Console.Printf("%s Amount: %i", ammoName, ammoInv.Amount);
-      Console.Printf("Old Max %s Amount: %i", ammoName, ammoInv.MaxAmount);
-      Console.Printf("Old Max %s Amount (backpack): %i", ammoName, ammoInv.BackpackMaxAmount);
-      let initialMaxAmount = ammoInv.MaxAmount;
+      // Console.Printf("%s Amount: %i", ammoName, ammoInv.Amount);
+      // Console.Printf("Old Max %s Amount: %i", ammoName, ammoInv.MaxAmount);
+      // Console.Printf("Old Max %s Amount (backpack): %i", ammoName, ammoInv.BackpackMaxAmount);
+      
+      
+      int initialMaxAmount = initialMaxAmmo;
+      int totalAmmoIncrease = ammoIncrease * amount;
+      
       if(initialMaxAmount == ammoInv.BackpackMaxAmount)
       {
-        ammoInv.MaxAmount = initialMaxAmount + (ammoIncrease * 2);
+        ammoInv.MaxAmount = initialMaxAmount + (totalAmmoIncrease * 2);
         ammoInv.BackpackMaxAmount = ammoInv.MaxAmount;
       }
       else
       {
-        ammoInv.MaxAmount = initialMaxAmount + ammoIncrease;
-        ammoInv.BackpackMaxAmount = (initialMaxAmount * 2) + (ammoIncrease * 2);
+        ammoInv.MaxAmount = initialMaxAmount + totalAmmoIncrease;
+        ammoInv.BackpackMaxAmount = (initialMaxAmount * 2) + (totalAmmoIncrease * 2);
+        if (plr.FindInventory("Backpack",true)) ammoInv.MaxAmount = ammoInv.BackpackMaxAmount;
       }
 
       totalAmmoAmount = ammoInv.MaxAmount;
       totalBackpackAmmoAmount = ammoInv.BackpackMaxAmount;
-      Console.Printf("New Max %s Amount: %i", ammoName, ammoInv.MaxAmount);
-      Console.Printf("New Max %s Amount (backpack): %i", ammoName, ammoInv.BackpackMaxAmount);
+
+      // Console.Printf("New Max %s Amount: %i", ammoName, ammoInv.MaxAmount);
+      // Console.Printf("New Max %s Amount (backpack): %i", ammoName, ammoInv.BackpackMaxAmount);
     }
   }
 }
@@ -209,6 +212,7 @@ class IncreaseBulletAmmoInv : IncreaseAmmoInv
   Default
   {
     IncreaseAmmoInv.ammoIncrease 50;
+    IncreaseAmmoInv.initialMaxAmmo 200;
     IncreaseAmmoInv.ammoClass "PB_LowCalMag";
     IncreaseAmmoInv.ammoName "Low Caliber Bullet";
   }
@@ -219,6 +223,7 @@ class IncreaseArAmmoInv : IncreaseAmmoInv
   Default
   {
     IncreaseAmmoInv.ammoIncrease 50;
+    IncreaseAmmoInv.initialMaxAmmo 300;
     IncreaseAmmoInv.ammoClass "PB_HighCalMag";
     IncreaseAmmoInv.ammoName "High Caliber Bullet";
     Inventory.maxamount 2;
@@ -230,6 +235,7 @@ class IncreaseShellAmmoInv : IncreaseAmmoInv
   Default
   {
     IncreaseAmmoInv.ammoIncrease 10;
+    IncreaseAmmoInv.initialMaxAmmo 50;
     IncreaseAmmoInv.ammoClass "PB_Shell";
     IncreaseAmmoInv.ammoName "Shell";
   }
@@ -240,6 +246,7 @@ class IncreaseRocketAmmoInv : IncreaseAmmoInv
   Default
   {
     IncreaseAmmoInv.ammoIncrease 10;
+    IncreaseAmmoInv.initialMaxAmmo 50;
     IncreaseAmmoInv.ammoClass "PB_RocketAmmo";
     IncreaseAmmoInv.ammoName "Rocket";
   }
@@ -250,6 +257,7 @@ class IncreaseCellAmmoInv : IncreaseAmmoInv
   Default
   {
     IncreaseAmmoInv.ammoIncrease 50;
+    IncreaseAmmoInv.initialMaxAmmo 300;
     IncreaseAmmoInv.ammoClass "PB_Cell";
     IncreaseAmmoInv.ammoName "Cell";
   }
@@ -312,12 +320,13 @@ class IncreasePowerupDuration : Inventory
   override bool HandlePickup (Inventory item)
   {
     let power = Powerup(item);
+    
     if (power)
     {
-      Console.Printf("Old Powerup Duration: %i", power.EffectTics);
+      // Console.Printf("Old Powerup Duration: %i", power.EffectTics);
       double durationMultipler = 1 + (powerupDurationIncrease * amount);
       power.EffectTics = power.EffectTics * durationMultipler;
-      Console.Printf("New Powerup Duration: %i", power.EffectTics);
+      // Console.Printf("New Powerup Duration: %i", power.EffectTics);
     }
 
     bool isGood = super.HandlePickup(item);
@@ -344,7 +353,7 @@ class HealthRegenUpgrade : Inventory
 
   override void DoEffect()
   {
-    if (regenTimeCounter < 350)
+    if (regenTimeCounter < 175)
     {
       regenTimeCounter++;
       return;
@@ -352,11 +361,7 @@ class HealthRegenUpgrade : Inventory
 
     int maxHealthLimit = regenLimit * amount;
     let plr = PlayerPawn(Owner);
-    if (!plr)
-    {
-      Console.Printf("No Owner!");
-      return;
-    }
+    if (!plr) return;
 
     if (plr.Health >= maxHealthLimit)
     {
@@ -389,7 +394,7 @@ class ArmorRegenUpgrade : Inventory
 
   override void DoEffect()
   {
-    if (regenTimeCounter < 350)
+    if (regenTimeCounter < 175)
     {
       regenTimeCounter++;
       return;
