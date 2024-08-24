@@ -33,7 +33,9 @@ OptionMenu "progression_menu"
 	StaticText ""
 	StaticText "Damage Increase Upgrades", FIRE
 	StaticText ""
-	SafeCommand "Purchase Damage Increase Upgrade (+5%)", "progression-purchase-di-upgrade", "Are You sure you want to purchase this upgrade?"
+	SafeCommand "Purchase Damage Increase Upgrade (+5%)", "progression-purchase-di-upgrade", "This upgrades most weapon's damage. Are You sure you want to purchase this upgrade?"
+	StaticText ""
+	SafeCommand "Purchase Berserk Damage Increase Upgrade (+10%)", "progression-purchase-bdi-upgrade", "This upgrades most weapon's damage when you pick up a berserk pack. Are You sure you want to purchase this upgrade?"
 	StaticText ""
 	StaticText "Miscellaneous Upgrades", FIRE
 	StaticText ""

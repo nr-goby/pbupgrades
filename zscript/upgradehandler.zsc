@@ -2,6 +2,7 @@ struct UpgradeInfo
 {
   int healthLevel;
   int damageLevel;
+  int berserkDamageLevel;
   int protectionLevel;
   int selfDamageLevel;
   int bulletAmmoLevel;
@@ -95,6 +96,11 @@ class ProgressionHandler : EventHandler
       PurchaseUpgrade("IncreaseMaxDamageInv", 2);
     }
 
+    if (e.Name ~== "progression-purchase-bdi-upgrade")
+    {
+      PurchaseUpgrade("IncreaseBerserkDamage", 4);
+    }
+
     if (e.Name ~== "progression-purchase-sdr-upgrade")
     {
       PurchaseUpgrade("ReduceSelfExplosionDamage", 5);
@@ -127,6 +133,9 @@ class ProgressionHandler : EventHandler
 
     let damage = player.FindInventory("IncreaseMaxDamageInv");
     if (damage) info.damageLevel = damage.amount;
+
+    let berserkDamage = player.FindInventory("IncreaseBerserkDamage");
+    if (berserkDamage) info.berserkDamageLevel = berserkDamage.amount;
 
     let protection = player.FindInventory("DecreaseDamageReceivedInv");
     if (protection) info.protectionLevel = protection.amount;
