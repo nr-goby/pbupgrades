@@ -29,7 +29,3 @@ Killing monsters rewards boom bucks; the amount rewarded depends on monster heal
 - > 2000 (cyber demons & spider masterminds) - 10 currency
 
 Finding a level secret adds 5 boom bucks, but only after the level is completed.
-
----
-
-&copy; Jim Davis 2024
