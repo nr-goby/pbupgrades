@@ -26,6 +26,6 @@ Killing monsters rewards boom bucks; the amount rewarded depends on monster heal
 - < 500 (demons, stronger imp variants) - 2 currency
 - < 1000 (hell knights, revenants, mancubi) - 3 currency
 - < 2000 (barons, archviles & stronger tier 3 variants) - 6 currency
-- > 2000 (cyber demons & spider masterminds) - 10 currency
+- &gt; 2000 (cyber demons & spider masterminds) - 10 currency
 
 Finding a level secret adds 5 boom bucks, but only after the level is completed.
